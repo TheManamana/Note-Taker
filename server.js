@@ -26,7 +26,22 @@ app.get('/notes', (req, res) =>
 
 app.get('/api/notes', (req, res) => res.json(notes));
 
+app.post('/api/notes', (req, res) => {
 
+    if (req.body.title && req.body.text) {
+
+        readAndAppend(req.body, './db/db.json');
+
+        const response = {
+            status: 'success',
+            body: req.body
+        };
+        res.status(200).json(response)
+    }
+    else {
+        res.json('Error occured when attempting to post a new note');
+    }
+});
 
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
