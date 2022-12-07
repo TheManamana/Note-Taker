@@ -3,6 +3,9 @@ const path = require('path');
 
 const { readAndAppend } = require('./helpers/fsUtils');
 const { writeToFile } = require('./helpers/fsUtils');
+const { readFromFile } = require('./helpers/fsUtils');
+
+const uuid = require('./helpers/uuid')
 
 const notes = require('./db/db.json');
 
@@ -24,17 +27,23 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, './public/notes.html'))
 );
 
-app.get('/api/notes', (req, res) => res.json(notes));
+app.get('/api/notes', (req, res) => readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data))));
+
+
 
 app.post('/api/notes', (req, res) => {
 
     if (req.body.title && req.body.text) {
-
-        readAndAppend(req.body, './db/db.json');
+        const newNote = {
+            title: req.body.title,
+            text:req.body.text,
+            id: uuid(),
+        }
+        readAndAppend(newNote, './db/db.json');
 
         const response = {
             status: 'success',
-            body: req.body
+            body: newNote
         };
         res.status(200).json(response)
     }
