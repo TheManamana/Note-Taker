@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 
+const fs = require('fs');
+
+
 const { readAndAppend } = require('./helpers/fsUtils');
 const { writeToFile } = require('./helpers/fsUtils');
 const { readFromFile } = require('./helpers/fsUtils');
@@ -52,22 +55,29 @@ app.post('/api/notes', (req, res) => {
     }
 });
 
-app.get('/api/notes/:id', (req, res) => {
 
-    const id = req.params.id;
-    const notes = readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
+app.delete('/api/notes/:id' , (req, res) => {
     
     
-    const foundNote = notes.find(note => note.id === id)
-    if (foundNote) {
-        res.json(foundNote)
-    }
-    else {
-        res.json({message: `There is no note with ID: ${id}`})
-    }
+    const id = req.params.id;         
+    
+    
+
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const notes = JSON.parse(data);
+        
+        writeToFile("./db/db.json", notes.filter(note => note.id !== id));
+      }
+    });
+  
+
+   
 })
-
 
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
+
