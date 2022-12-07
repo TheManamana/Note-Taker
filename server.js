@@ -7,7 +7,7 @@ const { readFromFile } = require('./helpers/fsUtils');
 
 const uuid = require('./helpers/uuid')
 
-const notes = require('./db/db.json');
+
 
 const PORT = 3001;
 
@@ -51,6 +51,22 @@ app.post('/api/notes', (req, res) => {
         res.json('Error occured when attempting to post a new note');
     }
 });
+
+app.get('/api/notes/:id', (req, res) => {
+
+    const id = req.params.id;
+    const notes = readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
+    
+    
+    const foundNote = notes.find(note => note.id === id)
+    if (foundNote) {
+        res.json(foundNote)
+    }
+    else {
+        res.json({message: `There is no note with ID: ${id}`})
+    }
+})
+
 
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
