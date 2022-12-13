@@ -39,7 +39,7 @@ app.post('/api/notes', (req, res) => {
     if (req.body.title && req.body.text) {
         const newNote = {
             title: req.body.title,
-            text:req.body.text,
+            text: req.body.text,
             id: uuid(),
         }
         readAndAppend(newNote, './db/db.json');
@@ -56,25 +56,25 @@ app.post('/api/notes', (req, res) => {
 });
 
 
-app.delete('/api/notes/:id' , (req, res) => {
-    
-    
-    const id = req.params.id;         
-    
-    
+app.delete('/api/notes/:id', (req, res) => {
+
+
+    const id = req.params.id;
 
     fs.readFile("./db/db.json", "utf-8", (err, data) => {
-      if (err) {
-        console.error(err);
-      } else {
-        const notes = JSON.parse(data);
-        
-        writeToFile("./db/db.json", notes.filter(note => note.id !== id));
-      }
-    });
-  
+        if (err) {
+            console.error(err);
+        } else {
+            const notes = JSON.parse(data);
 
-   
+            writeToFile("./db/db.json", notes.filter(note => note.id !== id));
+            res.json(`Note deleted`);
+        }
+
+    });
+
+
+
 })
 
 app.listen(PORT, () =>
